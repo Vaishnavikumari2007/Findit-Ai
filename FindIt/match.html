@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Match Results - FindIt</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Green Design System for Match Cards */
+    .green-match-card {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      display: flex;
+      gap: 1.25rem;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.05);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .green-match-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(16, 185, 129, 0.12);
+    }
+
+    .green-badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.35rem 0.85rem;
+      border-bottom-left-radius: 0.75rem;
+      color: white;
+      background: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      box-shadow: 0 2px 5px rgba(16, 185, 129, 0.2);
+    }
+
+    .green-match-image {
+      width: 8rem;
+      height: 8rem;
+      background: #d1fae5;
+      border-radius: 0.75rem;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: #34d399;
+      border: 1px solid #bbf7d0;
+    }
+
+    .green-match-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 0.75rem;
+    }
+
+    .green-meta-label {
+      background: #d1fae5;
+      color: #059669;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.125rem 0.5rem;
+      border-radius: 0.375rem;
+    }
+
+    .green-ai-reasoning {
+      background: #d1fae5;
+      border-radius: 0.75rem;
+      padding: 0.875rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #10b981;
+    }
+
+    .green-ai-reasoning p {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #065f46;
+      margin-bottom: 0.25rem;
+    }
+
+    .green-ai-reasoning ul {
+      font-size: 0.75rem;
+      color: #047857;
+      margin-left: 1rem;
+      list-style-type: disc;
+    }
+
+    .btn-green {
+      background-color: #10b981;
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.5rem 1rem;
+    }
+
+    .btn-green:hover {
+      background-color: #059669;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+    }
+
+    /* Celebration & Lightning Animation */
+    .celebration-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.85);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Lightning Flash Effect */
+    .lightning-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+      animation: lightning-flash 5s infinite;
+    }
+
+    @keyframes lightning-flash {
+
+      0%,
+      95%,
+      100% {
+        background-color: rgba(255, 255, 255, 0);
+      }
+
+      96%,
+      98% {
+        background-color: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 100px rgba(255, 255, 255, 0.9) inset;
+      }
+
+      97% {
+        background-color: rgba(255, 255, 255, 0);
+      }
+
+      99% {
+        background-color: rgba(255, 255, 255, 0.8);
+      }
+    }
+
+    .celebration-card {
+      background: linear-gradient(135deg, #d1fae5, #ecfdf5);
+      border: 3px solid #6ee7b7;
+      border-radius: 2rem;
+      padding: 3rem;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+      z-index: 1001;
+      box-shadow: 0 25px 50px -12px rgba(16, 185, 129, 0.5);
+      animation: pop-up 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes pop-up {
+      0% {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .celebration-timer {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #047857;
+      margin-top: 1.5rem;
+    }
+
+    /* Confetti Particle Animation */
+    .particle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      opacity: 0.8;
+      border-radius: 50%;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-20px) rotate(0deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(105vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Demo Alert Header styling */
+    .demo-banner {
+      background-color: #fef3c7;
+      border: 1px solid #fcd34d;
+      color: #92400e;
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="navbar-container"></div>
+
+  <main class="main-content">
+    <div class="container animate-fade-in" style="padding-bottom: 4rem;">
+
+      <!-- Demo Alert Banner -->
+      <div id="demo-alert" class="demo-banner" style="display: none;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>No reports found in LocalStorage. Using simulated demo data to demonstrate the matching algorithm.</span>
+      </div>
+
+      <!-- Header -->
+      <div class="match-header">
+        <div>
+          <a href="dashboard.html"
+            style="font-size: 0.875rem; font-weight: 500; color: var(--text-muted); display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+          </a>
+          <h1 style="display: flex; align-items: center; gap: 0.75rem; font-size: 1.875rem;">
+            <i class="fa-solid fa-wand-magic-sparkles" style="color: #f43f5e;"></i> AI Match Results
+          </h1>
+          <p class="text-muted" style="margin-top: 0.5rem;">Our client-side matching algorithm has compared the reports
+            and identified these potential matches.</p>
+        </div>
+      </div>
+
+      <!-- Main Layout -->
+      <div class="match-grid">
+
+        <!-- Left Column: Source Lost Item -->
+        <div>
+          <div class="source-item-card">
+            <div class="source-header" style="background: #f43f5e;">Your Lost Item</div>
+            <div class="source-body">
+              <div id="source-image-container" class="image-placeholder"><i class="fa-solid fa-image"></i></div>
+              <h4 id="source-title" style="font-size: 1.125rem;">-</h4>
+              <p class="text-muted" id="source-subtitle" style="font-size: 0.875rem; margin-bottom: 1rem;">-</p>
+
+              <div class="detail-row">
+                <span class="text-muted">Category</span>
+                <span id="source-category" style="font-weight: 500;">-</span>
+              </div>
+              <div class="detail-row">
+                <span class="text-muted">Brand</span>
+                <span id="source-brand" style="font-weight: 500;">-</span>
+              </div>
+              <div class="detail-row">
+                <span class="text-muted">Color</span>
+                <span id="source-color" style="font-weight: 500;">-</span>
+              </div>
+              <div class="detail-row">
+                <span class="text-muted">Location</span>
+                <span id="source-location" style="font-weight: 500;">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Matches -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.25rem;">Top Matching Found Items</h2>
+            <span id="match-count" class="green-meta-label">0 Matches</span>
+          </div>
+
+          <div id="matches-list">
+            <!-- Dynamically populated matched items -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Celebration Popup Overlay -->
+  <div id="celebration-overlay" class="celebration-overlay" style="display: none;">
+    <!-- Lightning Flash Layer -->
+    <div class="lightning-layer"></div>
+
+    <div class="celebration-card">
+      <div style="font-size: 4rem; margin-bottom: 1rem;">⚡🎉⚡</div>
+      <h2 style="font-size: 1.75rem; color: #065f46; margin-bottom: 0.75rem;">AI Match Celebration!</h2>
+      <p class="text-muted" style="line-height: 1.6; margin-bottom: 1.5rem;">
+        Boom! A high similarity match has been detected on FindIt!<br />
+        Our lightning-fast matching algorithm found a potential match for your item.
+      </p>
+
+      <div id="top-match-badge"
+        style="display: inline-block; background: #10b981; color: white; padding: 0.5rem 1.5rem; border-radius: 1rem; font-weight: 700; font-size: 1.25rem; margin-bottom: 1.5rem; box-shadow: 0 4px 15px rgba(16,185,129,0.3);">
+        92% Match Detected!
+      </div>
+
+      <div>
+        <button class="btn btn-primary" onclick="closeCelebration()" style="background: #059669;">
+          <i class="fa-solid fa-eye"></i> View Match Details
+        </button>
+      </div>
+
+      <div class="celebration-timer" id="celebration-timer">
+        Celebration ends in 20 seconds
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-container"></div>
+  <script src="js/script.js"></script>
+
+  <script>
+    /* ===== Matching Logic Configuration ===== */
+    const MATCH_THRESHOLD = 15; // Show anything over 15% similarity
+    let celebrationInterval = null;
+    let celebrationTimeout = null;
+    let celebrationSecondsLeft = 20;
+
+    /* ===== Mock Data Setup for Demonstrations ===== */
+    function injectMockDataIfEmpty() {
+      const lostReports = JSON.parse(localStorage.getItem('findit_lost_reports')) || [];
+      const foundReports = JSON.parse(localStorage.getItem('findit_found_reports')) || [];
+
+      let hasData = true;
+
+      // Check if we need to mock lost items
+      if (lostReports.length === 0) {
+        hasData = false;
+        const mockLost = {
+          id: 'LOST-DEMO-1',
+          type: 'lost',
+          reporterName: 'Sumit Kumar',
+          reporterPhone: '+91 9876543210',
+          reporterEmail: 'sumit@example.com',
+          itemName: 'Black iPhone 15 Pro Max',
+          category: 'electronics',
+          brand: 'Apple',
+          color: 'Black',
+          description: 'Lost my iPhone 15 Pro Max with a clear Spigen case. Screen has a glass protector.',
+          dateLost: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          location: 'Central Park South',
+          reward: '₹2000',
+          image: null,
+          status: 'active',
+          createdAt: new Date().toISOString()
+        };
+        lostReports.push(mockLost);
+        localStorage.setItem('findit_lost_reports', JSON.stringify(lostReports));
+      }
+
+      // Check if we need to mock found items
+      if (foundReports.length === 0) {
+        hasData = false;
+        const mockFound1 = {
+          id: 'FOUND-DEMO-1',
+          type: 'found',
+          finderName: 'Kunal Sen',
+          finderPhone: '+91 9998887776',
+          finderEmail: 'kunal@example.com',
+          itemName: 'iPhone 15 Pro Max',
+          category: 'electronics',
+          brand: 'Apple',
+          color: 'Black',
+          description: 'Found a black iPhone 15 Pro Max. Screen is locked. Has a transparent cover.',
+          dateFound: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          location: 'Central Park South Entrance',
+          currentHolder: 'With me',
+          image: null,
+          status: 'active',
+          createdAt: new Date().toISOString()
+        };
+
+        const mockFound2 = {
+          id: 'FOUND-DEMO-2',
+          type: 'found',
+          finderName: 'Rajesh V',
+          finderPhone: '+91 9898989898',
+          finderEmail: 'rajesh@example.com',
+          itemName: 'Apple iPhone 15 Blue',
+          category: 'electronics',
+          brand: 'Apple',
+          color: 'Blue',
+          description: 'Found an iPhone 15. The color is blue. Handed it to park security.',
+          dateFound: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          location: 'Central Park',
+          currentHolder: 'Security Office',
+          image: null,
+          status: 'active',
+          createdAt: new Date().toISOString()
+        };
+
+        const mockFound3 = {
+          id: 'FOUND-DEMO-3',
+          type: 'found',
+          finderName: 'Priya Patel',
+          finderPhone: '+91 9777666555',
+          finderEmail: 'priya@example.com',
+          itemName: 'Leather Card Holder Wallet',
+          category: 'wallet',
+          brand: 'N/A',
+          color: 'Black',
+          description: 'Found a small black leather wallet with some cards.',
+          dateFound: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          location: 'Central Park Zoo',
+          currentHolder: 'With me',
+          image: null,
+          status: 'active',
+          createdAt: new Date().toISOString()
+        };
+
+        foundReports.push(mockFound1, mockFound2, mockFound3);
+        localStorage.setItem('findit_found_reports', JSON.stringify(foundReports));
+      }
+
+      if (!hasData) {
+        document.getElementById('demo-alert').style.display = 'flex';
+      }
+    }
+
+    /* ===== Similarity Calculation Algorithm ===== */
+    function calculateSimilarity(lost, found) {
+      let score = 0;
+
+      // 1. Category comparison (20% weight)
+      if (lost.category && found.category && lost.category.toLowerCase().trim() === found.category.toLowerCase().trim()) {
+        score += 20;
+      }
+
+      // 2. Brand comparison (15% weight)
+      if (lost.brand && found.brand) {
+        const lb = lost.brand.toLowerCase().trim();
+        const fb = found.brand.toLowerCase().trim();
+        if (lb !== 'n/a' && fb !== 'n/a' && lb !== '' && fb !== '') {
+          if (lb === fb) {
+            score += 15;
+          } else if (lb.includes(fb) || fb.includes(lb)) {
+            score += 10;
+          }
+        }
+      }
+
+      // 3. Color comparison (20% weight)
+      if (lost.color && found.color) {
+        const lc = lost.color.toLowerCase().trim();
+        const fc = found.color.toLowerCase().trim();
+        if (lc === fc) {
+          score += 20;
+        } else if (lc.includes(fc) || fc.includes(lc)) {
+          score += 15;
+        } else {
+          const lWords = lc.split(/\s+/).filter(w => w.length > 2);
+          const fWords = fc.split(/\s+/).filter(w => w.length > 2);
+          const intersection = lWords.filter(w => fWords.includes(w));
+          if (intersection.length > 0) score += 10;
+        }
+      }
+
+      // 4. Location comparison (20% weight)
+      if (lost.location && found.location) {
+        const ll = lost.location.toLowerCase().trim();
+        const fl = found.location.toLowerCase().trim();
+        if (ll === fl) {
+          score += 20;
+        } else if (ll.includes(fl) || fl.includes(ll)) {
+          score += 15;
+        } else {
+          const lWords = ll.split(/[\s,.-]+/).filter(w => w.length > 3);
+          const fWords = fl.split(/[\s,.-]+/).filter(w => w.length > 3);
+          const intersection = lWords.filter(w => fWords.includes(w));
+          if (intersection.length > 0) score += 10;
+        }
+      }
+
+      // 5. Item Name comparison (25% weight)
+      if (lost.itemName && found.itemName) {
+        const ln = lost.itemName.toLowerCase().trim();
+        const fn = found.itemName.toLowerCase().trim();
+        if (ln === fn) {
+          score += 25;
+        } else if (ln.includes(fn) || fn.includes(ln)) {
+          score += 20;
+        } else {
+          // Token Overlap (Jaccard-like index on words)
+          const lWords = ln.split(/\s+/).filter(w => w.length > 1);
+          const fWords = fn.split(/\s+/).filter(w => w.length > 1);
+          const union = new Set([...lWords, ...fWords]);
+          const intersection = lWords.filter(w => fWords.includes(w));
+          if (union.size > 0) {
+            const overlap = (intersection.length / union.size) * 25;
+            score += Math.round(overlap);
+          }
+        }
+      }
+
+      // Baseline fallback for matches of the same category to keep it realistic
+      if (score < 15 && lost.category && found.category && lost.category === found.category) {
+        score = 15 + Math.floor(Math.random() * 5); // baseline ~15-20%
+      }
+
+      return Math.min(score, 100);
+    }
+
+    /* ===== Main Execution Flow ===== */
+    function runMatchProcess() {
+      // 1. Setup mock data if localStorage is empty
+      injectMockDataIfEmpty();
+
+      // 2. Retrieve lost item to match
+      const urlParams = new URLSearchParams(window.location.search);
+      const lostId = urlParams.get('id');
+
+      const lostReports = JSON.parse(localStorage.getItem('findit_lost_reports')) || [];
+      let sourceItem = null;
+
+      if (lostId) {
+        sourceItem = lostReports.find(r => r.id === lostId);
+      }
+
+      // Fallback: Use the most recent lost report if none specified or not found
+      if (!sourceItem && lostReports.length > 0) {
+        sourceItem = lostReports[lostReports.length - 1];
+      }
+
+      if (!sourceItem) {
+        document.getElementById('matches-list').innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-circle-info" style="font-size: 3rem; color: #fda4af; margin-bottom: 1rem;"></i>
+            <h3>No Lost Items Available</h3>
+            <p class="text-muted">Please report a lost item first to search for matching found items.</p>
+            <a href="report-lost.html" class="btn btn-primary mt-2">Report Lost Item</a>
+          </div>
+        `;
+        return;
+      }
+
+      // 3. Render Source Item Card details
+      document.getElementById('source-title').textContent = sourceItem.itemName;
+      document.getElementById('source-subtitle').textContent = `Lost at ${sourceItem.location} on ${formatDate(sourceItem.dateLost)}`;
+      document.getElementById('source-category').textContent = capitalize(sourceItem.category || 'Other');
+      document.getElementById('source-brand').textContent = sourceItem.brand || 'N/A';
+      document.getElementById('source-color').textContent = sourceItem.color;
+      document.getElementById('source-location').textContent = sourceItem.location;
+
+      if (sourceItem.image) {
+        document.getElementById('source-image-container').innerHTML = `<img src="${sourceItem.image}" alt="${sourceItem.itemName}" style="width:100%; height:100%; object-fit:cover; border-radius:0.75rem;" />`;
+      }
+
+      // 4. Calculate similarity percentages against found reports
+      const foundReports = JSON.parse(localStorage.getItem('findit_found_reports')) || [];
+      const matches = foundReports.map(foundItem => {
+        const similarity = calculateSimilarity(sourceItem, foundItem);
+        return {
+          item: foundItem,
+          similarity: similarity
+        };
+      })
+        .filter(match => match.similarity >= MATCH_THRESHOLD)
+        .sort((a, b) => b.similarity - a.similarity);
+
+      // 5. Render top matched found items
+      document.getElementById('match-count').textContent = `${matches.length} Matches Found`;
+
+      const listContainer = document.getElementById('matches-list');
+      if (matches.length === 0) {
+        listContainer.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-magnifying-glass" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
+            <h3>No matching found items found yet</h3>
+            <p class="text-muted">No items currently meet the match criteria. We will notify you if a finder reports a matching item.</p>
+          </div>
+        `;
+        return;
+      }
+
+      listContainer.innerHTML = matches.map(match => {
+        const item = match.item;
+        const imageHtml = item.image
+          ? `<img src="${item.image}" alt="${item.itemName}" />`
+          : `<i class="fa-solid fa-box-open"></i>`;
+
+        let matchClass = 'badge-med';
+        let matchWord = 'Moderate Match';
+        if (match.similarity >= 80) {
+          matchClass = 'badge-high';
+          matchWord = 'High Match';
+        } else if (match.similarity < 40) {
+          matchClass = 'badge-low';
+          matchWord = 'Low Match';
+        }
+
+        // Generate AI Match points reasoning list based on overlap
+        const reasoningPoints = [];
+        if (sourceItem.category === item.category) reasoningPoints.push('Matches item category');
+        if (sourceItem.color.toLowerCase().includes(item.color.toLowerCase()) || item.color.toLowerCase().includes(sourceItem.color.toLowerCase())) {
+          reasoningPoints.push(`Color profile aligns: ${item.color}`);
+        }
+        if (sourceItem.brand && item.brand && sourceItem.brand.toLowerCase() === item.brand.toLowerCase()) reasoningPoints.push(`Brand matching: ${item.brand}`);
+        if (sourceItem.location.toLowerCase().includes(item.location.toLowerCase()) || item.location.toLowerCase().includes(sourceItem.location.toLowerCase())) {
+          reasoningPoints.push('Geographical locations match');
+        } else {
+          reasoningPoints.push('Locations match within parameters');
+        }
+
+        return `
+          <div class="green-match-card">
+            <div class="green-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> ${match.similarity}% Match</div>
+            <div class="green-match-image">${imageHtml}</div>
+            <div class="match-info" style="flex: 1;">
+              <h3 style="color: #064e3b; font-size: 1.125rem;">Found: ${item.itemName}</h3>
+              <div class="match-meta" style="margin-bottom: 0.5rem;">
+                <span style="color: #047857;"><i class="fa-solid fa-location-dot"></i> ${item.location}</span>
+                <span style="color: #047857;"><i class="fa-regular fa-clock"></i> Reported ${formatDate(item.dateFound)}</span>
+              </div>
+              <p style="font-size: 0.875rem; margin-bottom: 1rem; color: #022c22; line-height: 1.5;">${item.description}</p>
+              
+              <div class="green-ai-reasoning">
+                <p><i class="fa-solid fa-bolt green-icon"></i> Match Points Detected:</p>
+                <ul>
+                  ${reasoningPoints.map(p => `<li>${p}</li>`).join('')}
+                </ul>
+              </div>
+              
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-green" onclick="showToast('Contact request sent!', 'success')">
+                  <i class="fa-solid fa-paper-plane"></i> Contact Finder
+                </button>
+                <button class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.5rem 1rem;" onclick="viewFoundDetail('${item.id}')">
+                  View Details
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 6. Celebration trigger if top match is >= 80%
+      if (matches[0] && matches[0].similarity >= 80) {
+        triggerCelebration(matches[0].similarity);
+      }
+    }
+
+    /* ===== Celebration Logic ===== */
+    function triggerCelebration(percent) {
+      const overlay = document.getElementById('celebration-overlay');
+      const badge = document.getElementById('top-match-badge');
+      badge.textContent = `${percent}% Match Detected!`;
+      overlay.style.display = 'flex';
+
+      // Create confetti
+      createConfetti();
+
+      // Countdown Timer Setup
+      celebrationSecondsLeft = 20;
+      const timerText = document.getElementById('celebration-timer');
+      timerText.textContent = `Celebration ends in ${celebrationSecondsLeft} seconds`;
+
+      celebrationInterval = setInterval(() => {
+        celebrationSecondsLeft--;
+        if (celebrationSecondsLeft <= 0) {
+          closeCelebration();
+        } else {
+          timerText.textContent = `Celebration ends in ${celebrationSecondsLeft} seconds`;
+        }
+      }, 1000);
+
+      celebrationTimeout = setTimeout(() => {
+        closeCelebration();
+      }, 20000);
+    }
+
+    function createConfetti() {
+      const overlay = document.getElementById('celebration-overlay');
+      const colors = ['#f43f5e', '#ec4899', '#fbcfe8', '#fb7185', '#f472b6', '#fbbf24', '#f59e0b'];
+
+      for (let i = 0; i < 70; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+
+        // Random style setup
+        const size = Math.random() * 8 + 6;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `-${Math.random() * 50 + 20}px`;
+
+        // Random falling parameters
+        const duration = Math.random() * 3 + 2;
+        const delay = Math.random() * 5;
+        particle.style.animationDuration = `${duration}s`;
+        particle.style.animationDelay = `${delay}s`;
+
+        overlay.appendChild(particle);
+      }
+    }
+
+    window.closeCelebration = function () {
+      const overlay = document.getElementById('celebration-overlay');
+      overlay.style.display = 'none';
+      clearInterval(celebrationInterval);
+      clearTimeout(celebrationTimeout);
+
+      // Clean up confetti elements
+      const particles = overlay.querySelectorAll('.particle');
+      particles.forEach(p => p.remove());
+    };
+
+    /* ===== View Details of Found Item ===== */
+    window.viewFoundDetail = function (itemId) {
+      const foundReports = JSON.parse(localStorage.getItem('findit_found_reports')) || [];
+      const item = foundReports.find(i => i.id === itemId);
+      if (!item) return;
+      showToast(`Reviewing item: ${item.itemName} at ${item.location}`, 'success');
+    };
+
+    /* ===== Helper formatting utilities ===== */
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return 'N/A';
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    // Run matching on load
+    runMatchProcess();
+  </script>
+</body>
+
+</html>

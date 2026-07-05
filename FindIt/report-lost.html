@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Report Lost Item - FindIt</title>
+  <meta name="description" content="Report a lost item on FindIt. Our AI will help match it with found items." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <div id="navbar-container"></div>
+
+  <main class="main-content">
+    <div class="report-container animate-fade-in">
+
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="page-icon page-icon-lost"><i class="fa-solid fa-magnifying-glass"></i></div>
+        <h1 style="font-size: 1.875rem; margin-bottom: 0.5rem;">Report Lost Item</h1>
+        <p class="text-muted">Provide details about your lost item so our AI can help you find it.</p>
+      </div>
+
+      <div class="card">
+        <form id="report-lost-form" novalidate>
+
+          <!-- Section 1: Your Information -->
+          <div>
+            <h2 class="section-title"><i class="fa-solid fa-user text-secondary"></i> Your Information</h2>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="reporter-name">Full Name *</label>
+                <div class="input-icon-wrapper">
+                  <i class="fa-solid fa-user"></i>
+                  <input type="text" id="reporter-name" class="form-control" placeholder="e.g., John Doe" required />
+                </div>
+                <span class="field-error" id="error-name"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="reporter-phone">Phone Number *</label>
+                <div class="input-icon-wrapper">
+                  <i class="fa-solid fa-phone"></i>
+                  <input type="tel" id="reporter-phone" class="form-control" placeholder="e.g., +91 9876543210"
+                    required />
+                </div>
+                <span class="field-error" id="error-phone"></span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="reporter-email">Email Address *</label>
+              <div class="input-icon-wrapper">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" id="reporter-email" class="form-control" placeholder="e.g., you@example.com"
+                  required />
+              </div>
+              <span class="field-error" id="error-email"></span>
+            </div>
+          </div>
+
+          <div class="divider-line"></div>
+
+          <!-- Section 2: Item Details -->
+          <div>
+            <h2 class="section-title"><i class="fa-solid fa-box-open text-secondary"></i> Item Details</h2>
+
+            <div class="form-group">
+              <label class="form-label" for="item-name">Item Name *</label>
+              <div class="input-icon-wrapper">
+                <i class="fa-solid fa-tag"></i>
+                <input type="text" id="item-name" class="form-control" placeholder="e.g., Black iPhone 15 Pro"
+                  required />
+              </div>
+              <span class="field-error" id="error-item-name"></span>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="item-category">Category *</label>
+                <select id="item-category" class="form-control" required style="appearance: auto;">
+                  <option value="">Select a category</option>
+                  <option value="electronics">Electronics</option>
+                  <option value="wallet">Wallet & Cards</option>
+                  <option value="keys">Keys</option>
+                  <option value="documents">Documents & ID</option>
+                  <option value="jewelry">Jewelry & Watches</option>
+                  <option value="bags">Bags & Luggage</option>
+                  <option value="clothing">Clothing & Accessories</option>
+                  <option value="pets">Pets</option>
+                  <option value="other">Other</option>
+                </select>
+                <span class="field-error" id="error-category"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="item-brand">Brand</label>
+                <div class="input-icon-wrapper">
+                  <i class="fa-solid fa-certificate"></i>
+                  <input type="text" id="item-brand" class="form-control" placeholder="e.g., Apple, Samsung" />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="item-color">Color *</label>
+              <div class="input-icon-wrapper">
+                <i class="fa-solid fa-palette"></i>
+                <input type="text" id="item-color" class="form-control" placeholder="e.g., Midnight Black" required />
+              </div>
+              <span class="field-error" id="error-color"></span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="item-description">Description *</label>
+              <textarea id="item-description" rows="4" class="form-control" required
+                placeholder="Describe your item in detail — any scratches, stickers, unique marks that could help identify it..."
+                style="resize: vertical;"></textarea>
+              <span class="field-error" id="error-description"></span>
+            </div>
+          </div>
+
+          <div class="divider-line"></div>
+
+          <!-- Section 3: Location & Date -->
+          <div>
+            <h2 class="section-title"><i class="fa-solid fa-location-dot text-secondary"></i> Location & Date</h2>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="date-lost">Date Lost *</label>
+                <div class="input-icon-wrapper">
+                  <i class="fa-solid fa-calendar"></i>
+                  <input type="date" id="date-lost" class="form-control" required style="padding-left: 2.5rem;" />
+                </div>
+                <span class="field-error" id="error-date"></span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="location-lost">Location Where Lost *</label>
+                <div class="input-icon-wrapper">
+                  <i class="fa-solid fa-map-marker-alt"></i>
+                  <input type="text" id="location-lost" class="form-control" placeholder="e.g., Central Park, New York"
+                    required />
+                </div>
+                <span class="field-error" id="error-location"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider-line"></div>
+
+          <!-- Section 4: Image Upload -->
+          <div>
+            <h2 class="section-title"><i class="fa-solid fa-camera text-secondary"></i> Upload Image</h2>
+            <p class="text-muted mb-4" style="font-size: 0.875rem;">Upload a photo of your item. Our AI will analyze it
+              to find potential matches.</p>
+
+            <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+              <input type="file" id="file-input" style="display: none;" accept="image/*" />
+              <div class="upload-icon upload-icon-blue"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+              <p style="font-weight: 500; font-size: 0.875rem; margin-bottom: 0.25rem;">Click to upload or drag and drop
+              </p>
+              <p class="text-muted" style="font-size: 0.75rem;">PNG, JPG or GIF (max. 5MB)</p>
+            </div>
+
+            <!-- Image Preview -->
+            <div id="image-preview-container" style="display: none; margin-top: 1rem; position: relative;">
+              <img id="image-preview" src="" alt="Preview"
+                style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 1rem; border: 1px solid rgba(226,232,240,0.8);" />
+              <button type="button" id="remove-image-btn" onclick="removeImage()"
+                style="position: absolute; top: 0.5rem; right: 0.5rem; background: #ef4444; color: white; border: none; border-radius: 50%; width: 2rem; height: 2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="divider-line"></div>
+
+          <!-- Section 5: Reward -->
+          <div>
+            <h2 class="section-title"><i class="fa-solid fa-gift text-secondary"></i> Reward (Optional)</h2>
+            <div class="form-group">
+              <label class="form-label" for="reward">Reward Offered</label>
+              <div class="input-icon-wrapper">
+                <i class="fa-solid fa-indian-rupee-sign"></i>
+                <input type="text" id="reward" class="form-control" placeholder="e.g., ₹500 or a Thank You note" />
+              </div>
+            </div>
+          </div>
+
+          <div class="divider-line" style="margin-bottom: 1.5rem;"></div>
+
+          <!-- Submit -->
+          <button type="submit" id="submit-btn" class="btn btn-primary w-full" style="padding: 1rem; font-size: 1rem;">
+            <i class="fa-solid fa-check-circle"></i> Submit Lost Item Report
+          </button>
+
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Success Popup Modal -->
+  <div id="success-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content animate-fade-in">
+      <div style="text-align: center;">
+        <div
+          style="width: 5rem; height: 5rem; background: linear-gradient(135deg, #10b981, #14b8a6); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; box-shadow: 0 10px 25px -5px rgba(16,185,129,0.3);">
+          <i class="fa-solid fa-check" style="font-size: 2.5rem; color: white;"></i>
+        </div>
+        <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--primary);">Report Submitted!</h2>
+        <p class="text-muted" style="margin-bottom: 2rem; line-height: 1.6;">Your lost item report has been saved
+          successfully.<br />Our AI will start scanning for potential matches immediately.</p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <a href="dashboard.html" class="btn btn-primary"><i class="fa-solid fa-gauge-high"></i> Go to Dashboard</a>
+          <button class="btn btn-secondary" onclick="closeModal()"><i class="fa-solid fa-plus"></i> Report
+            Another</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-container"></div>
+  <script src="js/script.js"></script>
+
+  <script>
+    /* ===== Image Upload Preview ===== */
+    let uploadedImageData = null;
+
+    document.getElementById('file-input').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('File size must be less than 5MB', 'error');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (evt) {
+        uploadedImageData = evt.target.result;
+        document.getElementById('image-preview').src = uploadedImageData;
+        document.getElementById('image-preview-container').style.display = 'block';
+        document.getElementById('upload-zone').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    window.removeImage = function () {
+      uploadedImageData = null;
+      document.getElementById('file-input').value = '';
+      document.getElementById('image-preview-container').style.display = 'none';
+      document.getElementById('upload-zone').style.display = 'block';
+    };
+
+    /* ===== Validation Helpers ===== */
+    function showFieldError(id, msg) {
+      const el = document.getElementById(id);
+      if (el) { el.textContent = msg; el.style.display = 'block'; }
+    }
+
+    function clearAllErrors() {
+      document.querySelectorAll('.field-error').forEach(el => {
+        el.textContent = '';
+        el.style.display = 'none';
+      });
+      document.querySelectorAll('.form-control.input-error').forEach(el => {
+        el.classList.remove('input-error');
+      });
+    }
+
+    function markInvalid(inputId, errorId, msg) {
+      const input = document.getElementById(inputId);
+      if (input) input.classList.add('input-error');
+      showFieldError(errorId, msg);
+    }
+
+    /* ===== Form Submission ===== */
+    document.getElementById('report-lost-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      clearAllErrors();
+
+      const name = document.getElementById('reporter-name').value.trim();
+      const phone = document.getElementById('reporter-phone').value.trim();
+      const email = document.getElementById('reporter-email').value.trim();
+      const itemName = document.getElementById('item-name').value.trim();
+      const category = document.getElementById('item-category').value;
+      const color = document.getElementById('item-color').value.trim();
+      const description = document.getElementById('item-description').value.trim();
+      const dateLost = document.getElementById('date-lost').value;
+      const location = document.getElementById('location-lost').value.trim();
+      const brand = document.getElementById('item-brand').value.trim();
+      const reward = document.getElementById('reward').value.trim();
+
+      let isValid = true;
+
+      /* Validate required fields */
+      if (!name) { markInvalid('reporter-name', 'error-name', 'Full name is required'); isValid = false; }
+      if (!phone) { markInvalid('reporter-phone', 'error-phone', 'Phone number is required'); isValid = false; }
+      else if (!/^[\+]?[\d\s\-]{7,15}$/.test(phone)) { markInvalid('reporter-phone', 'error-phone', 'Enter a valid phone number'); isValid = false; }
+
+      if (!email) { markInvalid('reporter-email', 'error-email', 'Email is required'); isValid = false; }
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { markInvalid('reporter-email', 'error-email', 'Enter a valid email address'); isValid = false; }
+
+      if (!itemName) { markInvalid('item-name', 'error-item-name', 'Item name is required'); isValid = false; }
+      if (!category) { markInvalid('item-category', 'error-category', 'Please select a category'); isValid = false; }
+      if (!color) { markInvalid('item-color', 'error-color', 'Color is required'); isValid = false; }
+      if (!description) { markInvalid('item-description', 'error-description', 'Description is required'); isValid = false; }
+      if (!dateLost) { markInvalid('date-lost', 'error-date', 'Date is required'); isValid = false; }
+      if (!location) { markInvalid('location-lost', 'error-location', 'Location is required'); isValid = false; }
+
+      if (!isValid) {
+        showToast('Please fix the errors in the form', 'error');
+        /* Scroll to the first error */
+        const firstError = document.querySelector('.field-error[style*="block"]');
+        if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      /* Show loading state */
+      const btn = document.getElementById('submit-btn');
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Submitting...';
+      btn.disabled = true;
+
+      /* Build report object */
+      const report = {
+        id: 'LOST-' + Date.now(),
+        type: 'lost',
+        reporterName: name,
+        reporterPhone: phone,
+        reporterEmail: email,
+        itemName: itemName,
+        category: category,
+        brand: brand,
+        color: color,
+        description: description,
+        dateLost: dateLost,
+        location: location,
+        reward: reward,
+        image: uploadedImageData || null,
+        status: 'active',
+        createdAt: new Date().toISOString()
+      };
+
+      /* Save to LocalStorage */
+      setTimeout(() => {
+        const reports = JSON.parse(localStorage.getItem('findit_lost_reports')) || [];
+        reports.push(report);
+        localStorage.setItem('findit_lost_reports', JSON.stringify(reports));
+
+        /* Show success modal */
+        document.getElementById('success-modal').style.display = 'flex';
+        showToast('Lost item report submitted!', 'success');
+
+        /* Reset button */
+        btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Submit Lost Item Report';
+        btn.disabled = false;
+      }, 1200);
+    });
+
+    /* ===== Modal Controls ===== */
+    window.closeModal = function () {
+      document.getElementById('success-modal').style.display = 'none';
+      document.getElementById('report-lost-form').reset();
+      removeImage();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    /* Close modal on overlay click */
+    document.getElementById('success-modal').addEventListener('click', function (e) {
+      if (e.target === this) closeModal();
+    });
+  </script>
+</body>
+
+</html>

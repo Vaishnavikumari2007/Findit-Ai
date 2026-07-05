@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - FindIt</title>
+  <meta name="description" content="FindIt Dashboard - View and manage your lost and found item reports." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <div id="navbar-container"></div>
+
+  <main class="main-content">
+    <div class="container animate-fade-in" style="padding-bottom: 3rem;">
+
+      <!-- Dashboard Header -->
+      <div class="dashboard-header">
+        <div>
+          <h1 style="font-size: 1.875rem; margin-bottom: 0.25rem;" id="welcome-heading">Welcome back!</h1>
+          <p class="text-muted" style="font-size: 0.875rem;">Manage your reported items and check for matches.</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem;">
+          <a href="report-lost.html" class="btn btn-primary" style="padding: 0.5rem 1rem;">
+            <i class="fa-solid fa-plus"></i> Report Lost
+          </a>
+          <a href="report-found.html" class="btn btn-secondary" style="padding: 0.5rem 1rem;">
+            <i class="fa-solid fa-plus"></i> Report Found
+          </a>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon stat-blue"><i class="fa-solid fa-box-open"></i></div>
+          <p style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem;" id="stat-total">0</p>
+          <p class="text-muted" style="font-size: 0.875rem;">Total Items</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <p style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem;" id="stat-lost">0</p>
+          <p class="text-muted" style="font-size: 0.875rem;">Lost Items</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-green"><i class="fa-solid fa-circle-check"></i></div>
+          <p style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem;" id="stat-found">0</p>
+          <p class="text-muted" style="font-size: 0.875rem;">Found Items</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-amber"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+          <p style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem;" id="stat-matches">0</p>
+          <p class="text-muted" style="font-size: 0.875rem;">Matches</p>
+        </div>
+      </div>
+
+      <!-- Search & Filter Bar -->
+      <div class="filter-bar">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; flex: 1; max-width: 650px;">
+          <div class="search-box" style="flex: 1; max-width: none;">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="search-input" class="form-control" placeholder="Search items..."
+              oninput="filterItems()">
+          </div>
+          <select id="category-filter" class="form-control"
+            style="width: auto; min-width: 170px; appearance: auto; background-color: var(--surface);"
+            onchange="filterItems()">
+            <option value="all">All Categories</option>
+            <option value="electronics">Electronics</option>
+            <option value="wallet">Wallet & Cards</option>
+            <option value="keys">Keys</option>
+            <option value="documents">Documents & ID</option>
+            <option value="jewelry">Jewelry & Watches</option>
+            <option value="bags">Bags & Luggage</option>
+            <option value="clothing">Clothing & Accessories</option>
+            <option value="pets">Pets</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="tabs">
+          <button class="tab active" onclick="setFilter('all', this)">All Items</button>
+          <button class="tab" onclick="setFilter('lost', this)">Lost</button>
+          <button class="tab" onclick="setFilter('found', this)">Found</button>
+        </div>
+      </div>
+
+      <!-- Items Grid (populated by JS) -->
+      <div id="items-grid" class="dash-items-grid"></div>
+
+      <!-- Empty State (shown when no items) -->
+      <div id="empty-state" class="empty-state" style="display: none;">
+        <i class="fa-solid fa-magnifying-glass-location"
+          style="font-size: 3.75rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
+        <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">No items reported yet</h3>
+        <p class="text-muted" style="max-width: 400px; margin: 0 auto 1.5rem; font-size: 0.875rem;">Start by reporting
+          a lost or found item to see it here and let our AI find a match.</p>
+        <div style="display: flex; gap: 0.75rem; justify-content: center;">
+          <a href="report-lost.html" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Report Lost</a>
+          <a href="report-found.html" class="btn btn-secondary">Report Found</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- View Item Modal -->
+  <div id="view-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content animate-fade-in" style="max-width: 560px;">
+      <div id="view-modal-body"></div>
+      <div
+        style="text-align: right; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(226,232,240,0.8);">
+        <button class="btn btn-secondary" onclick="closeViewModal()"><i class="fa-solid fa-xmark"></i> Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="delete-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content animate-fade-in" style="max-width: 420px;">
+      <div style="text-align: center;">
+        <div
+          style="width: 4rem; height: 4rem; background: #fef2f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
+          <i class="fa-solid fa-trash-can" style="font-size: 1.5rem; color: #ef4444;"></i>
+        </div>
+        <h2 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Delete this report?</h2>
+        <p class="text-muted" style="font-size: 0.875rem; margin-bottom: 2rem;">This action cannot be undone. The item
+          report will be permanently removed.</p>
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+          <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+          <button class="btn" id="confirm-delete-btn" style="background: #ef4444; color: white;"
+            onclick="confirmDelete()">
+            <i class="fa-solid fa-trash-can"></i> Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-container"></div>
+  <script src="js/script.js"></script>
+
+  <script>
+    /* ===== State ===== */
+    let currentFilter = 'all';
+    let deleteTarget = null; // { type, id }
+
+    /* ===== Load User Name ===== */
+    (function loadUserName() {
+      const user = JSON.parse(localStorage.getItem('findit_currentUser'));
+      if (user && user.name) {
+        document.getElementById('welcome-heading').textContent = 'Welcome back, ' + user.name + '!';
+      }
+    })();
+
+    /* ===== Read Items from LocalStorage ===== */
+    function getLostItems() {
+      return JSON.parse(localStorage.getItem('findit_lost_reports')) || [];
+    }
+
+    function getFoundItems() {
+      return JSON.parse(localStorage.getItem('findit_found_reports')) || [];
+    }
+
+    /* ===== Render Dashboard ===== */
+    function renderDashboard() {
+      const lost = getLostItems();
+      const found = getFoundItems();
+
+      // Update stats
+      document.getElementById('stat-total').textContent = lost.length + found.length;
+      document.getElementById('stat-lost').textContent = lost.length;
+      document.getElementById('stat-found').textContent = found.length;
+      document.getElementById('stat-matches').textContent = '0';
+
+      // Build combined list
+      let items = [];
+      if (currentFilter === 'all' || currentFilter === 'lost') {
+        items = items.concat(lost.map(i => ({ ...i, _type: 'lost' })));
+      }
+      if (currentFilter === 'all' || currentFilter === 'found') {
+        items = items.concat(found.map(i => ({ ...i, _type: 'found' })));
+      }
+
+      // Apply search filter
+      const query = (document.getElementById('search-input').value || '').toLowerCase().trim();
+      if (query) {
+        items = items.filter(i =>
+          (i.itemName || '').toLowerCase().includes(query) ||
+          (i.category || '').toLowerCase().includes(query) ||
+          (i.location || i.locationFound || '').toLowerCase().includes(query) ||
+          (i.color || '').toLowerCase().includes(query)
+        );
+      }
+
+      // Apply category filter
+      const selectedCategory = document.getElementById('category-filter').value;
+      if (selectedCategory !== 'all') {
+        items = items.filter(i => (i.category || '').toLowerCase() === selectedCategory.toLowerCase());
+      }
+
+      // Sort by date (newest first)
+      items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      const grid = document.getElementById('items-grid');
+      const empty = document.getElementById('empty-state');
+
+      if (items.length === 0) {
+        grid.style.display = 'none';
+        empty.style.display = 'block';
+      } else {
+        grid.style.display = 'grid';
+        empty.style.display = 'none';
+        grid.innerHTML = items.map(item => createItemCard(item)).join('');
+      }
+    }
+
+    /* ===== Create Card HTML ===== */
+    function createItemCard(item) {
+      const isLost = item._type === 'lost';
+      const cardClass = isLost ? 'dash-card-lost' : 'dash-card-found';
+      const badgeClass = isLost ? 'badge-lost' : 'badge-found';
+      const badgeText = isLost ? 'LOST' : 'FOUND';
+      const badgeIcon = isLost ? 'fa-triangle-exclamation' : 'fa-circle-check';
+      const date = item.dateLost || item.dateFound || '';
+      const location = item.location || item.locationFound || '';
+      const statusText = item.status === 'active' ? 'Active' : 'Matched';
+      const statusClass = item.status === 'active' ? 'status-active' : 'status-matched';
+
+      const imageHtml = item.image
+        ? '<img src="' + item.image + '" alt="' + (item.itemName || 'Item') + '" class="dash-card-img" />'
+        : '<div class="dash-card-img-placeholder"><i class="fa-solid fa-image"></i></div>';
+
+      return '<div class="dash-card ' + cardClass + '">'
+        + '<div class="dash-card-img-wrap">'
+        + imageHtml
+        + '<span class="dash-badge ' + badgeClass + '"><i class="fa-solid ' + badgeIcon + '"></i> ' + badgeText + '</span>'
+        + '</div>'
+        + '<div class="dash-card-body">'
+        + '<h3 class="dash-card-title">' + (item.itemName || 'Untitled Item') + '</h3>'
+        + '<div class="dash-card-meta">'
+        + '<span><i class="fa-solid fa-folder"></i> ' + capitalize(item.category || 'Other') + '</span>'
+        + '<span><i class="fa-solid fa-location-dot"></i> ' + (location || 'N/A') + '</span>'
+        + '</div>'
+        + '<div class="dash-card-meta">'
+        + '<span><i class="fa-solid fa-calendar"></i> ' + formatDate(date) + '</span>'
+        + '<span class="dash-status ' + statusClass + '"><i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> ' + statusText + '</span>'
+        + '</div>'
+        + '<div class="dash-card-actions">'
+        + '<button class="btn-action btn-view" onclick="viewItem(\'' + item._type + '\',\'' + item.id + '\')"><i class="fa-solid fa-eye"></i> View</button>'
+        + '<button class="btn-action btn-edit" onclick="editItem(\'' + item._type + '\',\'' + item.id + '\')"><i class="fa-solid fa-pen"></i> Edit</button>'
+        + '<button class="btn-action btn-delete" onclick="deleteItem(\'' + item._type + '\',\'' + item.id + '\')"><i class="fa-solid fa-trash-can"></i> Delete</button>'
+        + '</div>'
+        + '</div>'
+        + '</div>';
+    }
+
+    /* ===== Helpers ===== */
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return 'N/A';
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    /* ===== Filter & Search ===== */
+    function setFilter(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      renderDashboard();
+    }
+
+    function filterItems() {
+      renderDashboard();
+    }
+
+    /* ===== View Item ===== */
+    function viewItem(type, id) {
+      const items = type === 'lost' ? getLostItems() : getFoundItems();
+      const item = items.find(i => i.id === id);
+      if (!item) return;
+
+      const isLost = type === 'lost';
+      const imageHtml = item.image
+        ? '<img src="' + item.image + '" alt="' + item.itemName + '" style="width:100%; max-height:250px; object-fit:cover; border-radius:1rem; margin-bottom:1.5rem;" />'
+        : '';
+
+      const html = ''
+        + imageHtml
+        + '<h2 style="font-size:1.375rem; margin-bottom:0.25rem;">' + (item.itemName || 'Untitled') + '</h2>'
+        + '<span class="dash-badge ' + (isLost ? 'badge-lost' : 'badge-found') + '" style="position:static; display:inline-flex; margin-bottom:1.25rem;">'
+        + '<i class="fa-solid ' + (isLost ? 'fa-triangle-exclamation' : 'fa-circle-check') + '"></i> ' + (isLost ? 'LOST' : 'FOUND')
+        + '</span>'
+        + '<div class="view-detail-grid">'
+        + viewRow('Category', capitalize(item.category || 'Other'))
+        + viewRow('Color', item.color || 'N/A')
+        + viewRow('Brand', item.brand || 'N/A')
+        + viewRow(isLost ? 'Date Lost' : 'Date Found', formatDate(item.dateLost || item.dateFound))
+        + viewRow('Location', item.location || 'N/A')
+        + viewRow('Status', '<span class="dash-status ' + (item.status === 'active' ? 'status-active' : 'status-matched') + '"><i class="fa-solid fa-circle" style="font-size:0.5rem;"></i> ' + capitalize(item.status || 'active') + '</span>')
+        + (item.reward ? viewRow('Reward', item.reward) : '')
+        + (item.currentHolder ? viewRow('Item Held At', item.currentHolder) : '')
+        + '</div>'
+        + '<div style="margin-top:1rem;">'
+        + '<p style="font-size:0.8125rem; font-weight:600; margin-bottom:0.25rem;">Description</p>'
+        + '<p class="text-muted" style="font-size:0.875rem; line-height:1.6;">' + (item.description || 'No description provided.') + '</p>'
+        + '</div>';
+
+      document.getElementById('view-modal-body').innerHTML = html;
+      document.getElementById('view-modal').style.display = 'flex';
+    }
+
+    function viewRow(label, value) {
+      return '<div class="view-row"><span class="view-label">' + label + '</span><span class="view-value">' + value + '</span></div>';
+    }
+
+    function closeViewModal() {
+      document.getElementById('view-modal').style.display = 'none';
+    }
+
+    document.getElementById('view-modal').addEventListener('click', function (e) {
+      if (e.target === this) closeViewModal();
+    });
+
+    /* ===== Edit Item ===== */
+    function editItem(type, id) {
+      // Redirect to appropriate report page with item id in URL for editing
+      const page = type === 'lost' ? 'report-lost.html' : 'report-found.html';
+      showToast('Edit feature: Open ' + page + ' to modify your report', 'success');
+    }
+
+    /* ===== Delete Item ===== */
+    function deleteItem(type, id) {
+      deleteTarget = { type, id };
+      document.getElementById('delete-modal').style.display = 'flex';
+    }
+
+    function confirmDelete() {
+      if (!deleteTarget) return;
+      const key = deleteTarget.type === 'lost' ? 'findit_lost_reports' : 'findit_found_reports';
+      let items = JSON.parse(localStorage.getItem(key)) || [];
+      items = items.filter(i => i.id !== deleteTarget.id);
+      localStorage.setItem(key, JSON.stringify(items));
+
+      closeDeleteModal();
+      showToast('Item deleted successfully', 'success');
+      renderDashboard();
+      deleteTarget = null;
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('delete-modal').style.display = 'none';
+    }
+
+    document.getElementById('delete-modal').addEventListener('click', function (e) {
+      if (e.target === this) closeDeleteModal();
+    });
+
+    /* ===== Initial Render ===== */
+    renderDashboard();
+  </script>
+</body>
+
+</html>
