@@ -109,18 +109,6 @@ https://your-project-link.vercel.app
 
 ---
 
-## 📸 Screenshots
-
-Add screenshots of:
-
-- Home Page
-- Report Lost Item
-- Report Found Item
-- Dashboard
-- Match Results
-
----
-
 ## 🚀 Future Enhancements
 
 - AI Image Recognition
@@ -136,12 +124,12 @@ Add screenshots of:
 
 ## 👥 Team
 
-Team Name: **Your Team Name**
+Team Name: KV
 
 Members:
 
-- Your Name
-- Friend's Name
+- Vaishnavi
+- Kaushki
 
 ---
 
@@ -150,5 +138,6 @@ Members:
 This project was developed for educational and hackathon purposes.
 
 ---
+Project Status
 
-⭐ If you like this project, don't forget to star the repository.
+Under development. Features and integration may evolve as the project progresses.
